@@ -9,9 +9,9 @@ from gpu_collector import GPU
 class AvailabilityAlertTest(unittest.TestCase):
     def test_title_uses_detected_gpu_model(self):
         config = SimpleNamespace(card_title="", server_name="错误的旧名称")
-        gpu = GPU(0, "NVIDIA GeForce RTX 3090", 1, 100, 24576, 40, 50)
-        reports = [ServerReport("3090服务器", "online", [gpu], "now", "now")]
-        self.assertEqual("NVIDIA GeForce RTX 3090 GPU 状态", _card_title(config, reports))
+        gpu = GPU(0, "NVIDIA GeForce RTX 5090", 1, 100, 32768, 40, 50)
+        reports = [ServerReport("5090服务器", "online", [gpu], "now", "now")]
+        self.assertEqual("NVIDIA GeForce RTX 5090 GPU 状态", _card_title(config, reports))
 
     def test_high_then_middle_then_low_sends_once(self):
         config = SimpleNamespace(
@@ -22,8 +22,8 @@ class AvailabilityAlertTest(unittest.TestCase):
         state = {}
 
         def report(utilization):
-            gpu = GPU(0, "RTX 3090", utilization, 100, 24576, 40, 50)
-            return [ServerReport("3090服务器", "online", [gpu], "now", "now")]
+            gpu = GPU(0, "RTX 5090", utilization, 100, 32768, 40, 50)
+            return [ServerReport("5090服务器", "online", [gpu], "now", "now")]
 
         self.assertEqual([], _availability_events(config, state, report(75)))
         self.assertEqual([], _availability_events(config, state, report(45)))

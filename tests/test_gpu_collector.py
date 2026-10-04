@@ -14,8 +14,8 @@ class GPUCollectorTest(unittest.TestCase):
                 args=[],
                 returncode=0,
                 stdout=(
-                    "0, GPU-a, NVIDIA GeForce RTX 2080 Ti, 0, 65, 11264, 36, 19.22\n"
-                    "1, GPU-b, NVIDIA GeForce RTX 2080 Ti, 95, 9000, 11264, 70, 210.5\n"
+                    "0, GPU-a, NVIDIA GeForce RTX 5090, 0, 65, 32768, 36, 19.22\n"
+                    "1, GPU-b, NVIDIA GeForce RTX 5090, 95, 9000, 32768, 70, 210.5\n"
                 ),
                 stderr="",
             ),
@@ -28,7 +28,7 @@ class GPUCollectorTest(unittest.TestCase):
         ]
         gpus = collect_gpus()
         self.assertEqual(2, len(gpus))
-        self.assertEqual(11264, gpus[0].memory_total_mib)
+        self.assertEqual(32768, gpus[0].memory_total_mib)
         self.assertEqual("userA", gpus[0].users[0].username)
         self.assertEqual(1536, gpus[0].users[0].memory_used_mib)
         args, kwargs = run.call_args_list[0]

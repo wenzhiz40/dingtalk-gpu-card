@@ -9,12 +9,12 @@ class ConfigTest(unittest.TestCase):
     def test_blank_title_enables_detected_model_title(self):
         values = {
             "CARD_TITLE": "",
-            "LOCAL_SERVER_NAME": "3090服务器",
+            "LOCAL_SERVER_NAME": "5090服务器",
         }
         with patch.dict(os.environ, values, clear=True):
             config = load_config(require_dingtalk=False)
         self.assertEqual("", config.card_title)
-        self.assertEqual("3090服务器", config.server_name)
+        self.assertEqual("5090服务器", config.server_name)
 
     def test_rejects_invalid_alert_thresholds(self):
         values = {
