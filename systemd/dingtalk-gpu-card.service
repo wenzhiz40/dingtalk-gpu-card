@@ -1,0 +1,33 @@
+[Unit]
+Description=Read-only DingTalk GPU status card updater
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=gpu-card
+Group=gpu-card
+EnvironmentFile=/etc/dingtalk-gpu-card.env
+WorkingDirectory=/opt/dingtalk-gpu-card
+ExecStart=/usr/bin/python3 /opt/dingtalk-gpu-card/app.py
+Restart=on-failure
+RestartSec=15
+
+# Hardening: no inbound service, no privilege escalation, only state dir writable.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ReadWritePaths=/var/lib/dingtalk-gpu-card
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
+
