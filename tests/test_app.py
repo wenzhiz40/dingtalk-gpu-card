@@ -11,7 +11,7 @@ class AvailabilityAlertTest(unittest.TestCase):
         config = SimpleNamespace(card_title="", server_name="错误的旧名称")
         gpu = GPU(0, "NVIDIA GeForce RTX 5090", 1, 100, 32768, 40, 50)
         reports = [ServerReport("5090服务器", "online", [gpu], "now", "now")]
-        self.assertEqual("NVIDIA GeForce RTX 5090 GPU 状态", _card_title(config, reports))
+        self.assertEqual("5090 GPU 状态", _card_title(config, reports))
 
     def test_high_then_middle_then_low_sends_once(self):
         config = SimpleNamespace(

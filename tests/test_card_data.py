@@ -1,6 +1,11 @@
 import unittest
 
-from card_data import ServerReport, build_card_data, build_cluster_card_data
+from card_data import (
+    ServerReport,
+    build_card_data,
+    build_cluster_card_data,
+    short_model_name,
+)
 from gpu_collector import GPU, GPUUser
 
 
@@ -12,11 +17,16 @@ class CardDataTest(unittest.TestCase):
         ]
         result = build_card_data("5090", gpus, 10, 1024)
         self.assertEqual(["content"], list(result))
-        self.assertIn("1 张低占用，1 张使用中", result["content"])
-        self.assertIn("低占用（可能空闲）", result["content"])
+        self.assertIn("1 张低占用 · 1 张使用中", result["content"])
+        self.assertIn("低占用", result["content"])
+        self.assertNotIn("可能空闲", result["content"])
+        self.assertNotIn("检测到：", result["content"])
+        self.assertNotIn("1 台在线", result["content"])
         self.assertIn("使用中", result["content"])
         self.assertNotIn("PID", result["content"])
-        self.assertIn("未检测到可识别的计算任务", result["content"])
+        self.assertIn("计算用户：无可识别任务", result["content"])
+        self.assertIn("> 1. **状态判断：**", result["content"])
+        self.assertIn("> 4. **离线判断：**", result["content"])
 
     def test_only_aggregated_compute_users_are_rendered(self):
         gpu = GPU(
@@ -33,7 +43,23 @@ class CardDataTest(unittest.TestCase):
         self.assertIn("userA **4.0 GiB**", content)
         self.assertIn("userB **2.0 GiB**", content)
         self.assertNotIn("+0800", content)
-        self.assertIn("时间均为北京时间（UTC+8）", content)
+        self.assertIn("北京时间（UTC+8）", content)
+        self.assertIn("# 5090 GPU 状态", content)
+        self.assertNotIn("NVIDIA GeForce RTX 5090", content)
+
+    def test_short_model_name(self):
+        self.assertEqual("5090", short_model_name("NVIDIA GeForce RTX 5090"))
+        self.assertEqual("A100", short_model_name("NVIDIA A100-PCIE-40GB"))
+        self.assertEqual("L40S", short_model_name("NVIDIA L40S"))
+
+    def test_mixed_models_are_identified_per_gpu(self):
+        gpus = [
+            GPU(0, "NVIDIA GeForce RTX 5090", 0, 0, 32768, 35, 20),
+            GPU(1, "NVIDIA L40S", 0, 0, 49152, 35, 20),
+        ]
+        content = build_card_data("混合节点", gpus, 10, 1024)["content"]
+        self.assertIn("GPU 0 · 5090 · 🟢 低占用", content)
+        self.assertIn("GPU 1 · L40S · 🟢 低占用", content)
 
     def test_cluster_uses_detected_models_and_shows_offline_server(self):
         reports = [
@@ -54,7 +80,9 @@ class CardDataTest(unittest.TestCase):
             ),
         ]
         content = build_cluster_card_data("GPU 集群状态", reports, 10, 1024)["content"]
-        self.assertIn("NVIDIA GeForce RTX 5090", content)
+        self.assertIn("1 台在线", content)
+        self.assertIn("1 台掉线", content)
+        self.assertIn("5090", content)
         self.assertIn("掉线（疑似关机）", content)
         self.assertIn("最近在线", content)
 

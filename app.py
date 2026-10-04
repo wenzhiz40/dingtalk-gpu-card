@@ -14,7 +14,7 @@ import subprocess
 import sys
 import time
 
-from card_data import ServerReport, build_cluster_card_data
+from card_data import ServerReport, build_cluster_card_data, short_model_name
 from config import Config, load_config
 from dingtalk_api import DingTalkClient, DingTalkError
 from gpu_collector import (
@@ -151,7 +151,7 @@ def _card_title(config: Config, reports: list[ServerReport]) -> str:
             if gpu.name not in models:
                 models.append(gpu.name)
     if len(models) == 1:
-        return f"{models[0]} GPU 状态"
+        return f"{short_model_name(models[0])} GPU 状态"
     return f"{config.server_name} GPU 状态"
 
 
