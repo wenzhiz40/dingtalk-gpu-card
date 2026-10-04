@@ -25,8 +25,9 @@ class CardDataTest(unittest.TestCase):
         self.assertIn("使用中", result["content"])
         self.assertNotIn("PID", result["content"])
         self.assertIn("计算用户：无可识别任务", result["content"])
-        self.assertIn("> 1. **状态判断：**", result["content"])
-        self.assertIn("> 4. **离线判断：**", result["content"])
+        self.assertIn("> ① 使用中：", result["content"])
+        self.assertIn("> ④ 离线：", result["content"])
+        self.assertNotIn("**状态判断", result["content"])
 
     def test_only_aggregated_compute_users_are_rendered(self):
         gpu = GPU(
